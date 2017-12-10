@@ -6,6 +6,7 @@ Created on Mon Nov 20 12:26:47 2017
 """
 
 from bip39 import from_mnemonic_to_seed
+from electrum_seed import from_mnemonic_to_seed_eletrcum
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, bip32_parse_xkey, bip32_ckd
 from base58 import b58encode_check
 import hashlib
@@ -21,7 +22,12 @@ def public_key_to_bc_address(inp, version=b'\x00'):
 def path(xprv, index_child, version=b'\x00'):
   xprv = bip32_ckd(xprv, index_child[0])
   if index_child[1:] == []:
-    xpub = bip32_xprvtoxpub(xprv)
+    if xprv[:4] == 'xprv':
+      xpub = bip32_xprvtoxpub(xprv)
+    elif xprv[:4] == 'xpub':
+      xpub = xprv
+    else:
+      assert False
     info_xpub = bip32_parse_xkey(xpub)
     return public_key_to_bc_address(info_xpub['key'], version)
   else:
@@ -61,8 +67,42 @@ index_child = [0x80000000, 0x80000001, 0x80000001]
 assert path(xprv, index_child, version) == change
 
 
+### Electrum standard path derivation
 
+mnemonic = 'clay abstract easily position index taxi arrange ecology hobby digital turtle feel'
+xpub = 'xpub661MyMwAqRbcFMYjmw8C6dJV97a4oLss6hb3v9wTQn2X48msQB61RCaLGtNhzgPCWPaJu7SvuB9EBSFCL43kTaFJC3owdaMka85uS154cEh'
+passphrase = ''
 
+seed = from_mnemonic_to_seed_eletrcum(mnemonic, passphrase)
+seed = int(seed, 16)
+seed_bytes = 64
+xprv = bip32_master_key(seed, seed_bytes)
+
+assert xpub == bip32_xprvtoxpub(xprv)
+
+receive0 = '1FcfDbWwGs1PmyhMVpCAhoTfMnmSuptH6g'
+index_child = [0, 0]
+assert path(xprv, index_child) == receive0
+
+receive1 = '1K5GjYkZnPFvMDTGaQHTrVnd8wjmrtfR5x'
+index_child = [0, 1]
+assert path(xprv, index_child) == receive1
+
+receive2 = '1PQYX2uN7NYFd7Hq22ECMzfDcKhtrHmkfi'
+index_child = [0, 2]
+assert path(xprv, index_child) == receive2
+
+change0 = '1BvSYpojWoWUeaMLnzbkK55v42DbizCoyq'
+index_child = [1, 0]
+assert path(xprv, index_child) == change0
+
+change1 = '1NXB59hF4QzYpFrB7o6usLBjbk2D3ZqxAL'
+index_child = [1, 1]
+assert path(xprv, index_child) == change1
+
+change2 = '16NLYkKtvYhW1Jp86tbocku3gxWcvitY1w'
+index_child = [1, 2]
+assert path(xprv, index_child) == change2
 
 
 
