@@ -54,7 +54,7 @@ assert path(xprv, index_child, version) == receive
 index_child = [0x80000000, 1, 0]
 assert path(xprv, index_child, version) == change
 
-### Bitcoin-core path derivation
+### Bitcoin-core path derivation (VE)
 
 xprv = 'xprv9s21ZrQH143K2oxHiQ5f7D7WYgXD9h6HAXDBuMoozDGGiYHWsq7TLBj2yvGuHTLSPCaFmUyN1v3fJRiY2A4YuNSrqQMPVLZKt76goL6LP7L'
 receive = 'VUqyLGVdUADWEqDqL2DeUBAcbPQwZfWDDY' # "hdkeypath": "m/0'/0'/5'"
@@ -105,6 +105,18 @@ index_child = [1, 2]
 assert path(xprv, index_child) == change2
 
 
+
+### Bitcoin-core path derivation
+
+xprv = 'xprv9s21ZrQH143K2ZP8tyNiUtgoezZosUkw9hhir2JFzDhcUWKz8qFYk3cxdgSFoCMzt8E2Ubi1nXw71TLhwgCfzqFHfM5Snv4zboSebePRmLS'
+add1 = '1DyfBWxhVLmrJ7keyiHeMbt7N3UdeGU4G5' # hdkeypath=m/0'/0'/0'
+add2 = '11x2mn59Qy43DjisZWQGRResjyQmgthki' # hdkeypath=m/0'/0'/267'
+
+index_child = [0x80000000, 0x80000000, 0x80000000+463]
+print( path(xprv, index_child) == add1)
+
+index_child = [0x80000000, 0x80000000, 0x80000000 + 267]
+print(path(xprv, index_child) == add2)
 
 
 

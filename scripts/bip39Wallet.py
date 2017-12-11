@@ -1,23 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Dec 10 16:53:56 2017
+Created on Mon Dec 11 09:17:49 2017
 
 @author: dfornaro
 """
 
-from electrum_seed import from_mnemonic_to_seed_eletrcum, verify_mnemonic_electrum, from_entropy_to_mnemonic_int_electrum, from_mnemonic_int_to_mnemonic_electrum
+from bip39 import from_entropy_to_mnemonic_int, from_mnemonic_int_to_mnemonic, from_mnemonic_to_seed
 from change_receive_path import path
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub
 
-def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version = "standard", dictionary = 'Dictionary.txt'):
-  verify = False
-  while verify==False:
-    mnemonic_int = from_entropy_to_mnemonic_int_electrum(entropy, number_words)
-    mnemonic = from_mnemonic_int_to_mnemonic_electrum(mnemonic_int, dictionary)
-    verify = verify_mnemonic_electrum(mnemonic, version)
-    if verify==False:
-      entropy = entropy + 1
-  seed = from_mnemonic_to_seed_eletrcum(mnemonic, passphrase)
+def generate_wallet_bip39(entropy, number_words = 24, passphrase='', dictionary = 'Dictionary.txt'):
+  ENT = int(number_words*32/3)
+  mnemonic_int = from_entropy_to_mnemonic_int(entropy, ENT)
+  mnemonic = from_mnemonic_int_to_mnemonic(mnemonic_int, dictionary)
+  seed = from_mnemonic_to_seed(mnemonic, passphrase)
   seed = int(seed, 16)
   seed_bytes = 64
   xprv = bip32_master_key(seed, seed_bytes)
@@ -32,10 +28,10 @@ def generate_change(xpub, number):
   index_child = [1, number]
   return path(xpub, index_child)
 
-entropy = 0x545454545454545454545454545454545454545454545454545454545454666666
+entropy = 0xffffff789012345678901234567890123456789012345678901234567890abcd
 number_words = 24
 
-entropy_lenght = int(11*number_words/4)
+entropy_lenght = int(number_words*32/3/4)
 
 dictionary = 'Italian_dictionary.txt'
 passphrase = ''
@@ -43,7 +39,7 @@ version = 'standard'
 
 
 print('Your entropy should have', entropy_lenght, 'hexadecimal digits')
-mnemonic, entropy, xpub = generate_wallet_electrum(entropy, number_words, passphrase, version, dictionary)
+mnemonic, entropy, xpub = generate_wallet_bip39(entropy, number_words, passphrase, dictionary)
 
 print('\nmnemonic: ', mnemonic)
 print('\nxpub: ', xpub)
