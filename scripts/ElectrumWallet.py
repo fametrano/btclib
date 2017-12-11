@@ -6,8 +6,7 @@ Created on Sun Dec 10 16:53:56 2017
 """
 
 from electrum_seed import from_mnemonic_to_seed_eletrcum, verify_mnemonic_electrum, from_entropy_to_mnemonic_int_electrum, from_mnemonic_int_to_mnemonic_electrum
-from change_receive_path import path
-from bip32_functions import bip32_master_key, bip32_xprvtoxpub
+from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version = "standard", dictionary = 'Dictionary.txt'):
   verify = False

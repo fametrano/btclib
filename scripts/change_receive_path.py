@@ -7,32 +7,7 @@ Created on Mon Nov 20 12:26:47 2017
 
 from bip39 import from_mnemonic_to_seed
 from electrum_seed import from_mnemonic_to_seed_eletrcum
-from bip32_functions import bip32_master_key, bip32_xprvtoxpub, bip32_parse_xkey, bip32_ckd
-from base58 import b58encode_check
-import hashlib
-
-def h160(inp):
-  h1 = hashlib.sha256(inp).digest()
-  return hashlib.new('ripemd160', h1).digest()
-
-def public_key_to_bc_address(inp, version=b'\x00'):
-  vh160 = version + h160(inp)
-  return b58encode_check(vh160)
-
-def path(xprv, index_child, version=b'\x00'):
-  xprv = bip32_ckd(xprv, index_child[0])
-  if index_child[1:] == []:
-    if xprv[:4] == 'xprv':
-      xpub = bip32_xprvtoxpub(xprv)
-    elif xprv[:4] == 'xpub':
-      xpub = xprv
-    else:
-      assert False
-    info_xpub = bip32_parse_xkey(xpub)
-    return public_key_to_bc_address(info_xpub['key'], version)
-  else:
-    return path(xprv, index_child[1:], version)
-  
+from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 ### Electrum path derivation (bip39)
 
@@ -113,13 +88,25 @@ add1 = '1DyfBWxhVLmrJ7keyiHeMbt7N3UdeGU4G5' # hdkeypath=m/0'/0'/0'
 add2 = '11x2mn59Qy43DjisZWQGRResjyQmgthki' # hdkeypath=m/0'/0'/267'
 
 index_child = [0x80000000, 0x80000000, 0x80000000+463]
-print( path(xprv, index_child) == add1)
+assert path(xprv, index_child) == add1
 
 index_child = [0x80000000, 0x80000000, 0x80000000 + 267]
-print(path(xprv, index_child) == add2)
+assert path(xprv, index_child) == add2
 
 
+### Bitcoin-core testnet path derivation
 
+tprv = 'tprv8ZgxMBicQKsPe3g3HwF9xxTLiyc5tNyEtjhBBAk29YA3MTQUqULrmg7aj9qTKNfieuu2HryQ6tGVHse9x7ANFGs3f4HgypMc5nSSoxwf7TK'
+add1 = 'mfXYCCsvWPgeCv8ZYGqcubpNLYy5nYHbbj' # hdkeypath=m/0'/0'/51'
+add2 = 'mfaUnRFxVvf55uD1P3zWXpprN1EJcKcGrb' # hdkeypath=m/0'/1'/150'
+
+version = 0x6f.to_bytes(1, 'big')
+
+index_child = [0x80000000, 0x80000000, 0x80000000+51]
+assert path(tprv, index_child, version) == add1
+
+index_child = [0x80000000, 0x80000000 +1, 0x80000000 + 150]
+assert path(tprv, index_child, version) == add2
 
 
 

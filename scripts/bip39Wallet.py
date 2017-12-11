@@ -6,8 +6,7 @@ Created on Mon Dec 11 09:17:49 2017
 """
 
 from bip39 import from_entropy_to_mnemonic_int, from_mnemonic_int_to_mnemonic, from_mnemonic_to_seed
-from change_receive_path import path
-from bip32_functions import bip32_master_key, bip32_xprvtoxpub
+from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 def generate_wallet_bip39(entropy, number_words = 24, passphrase='', dictionary = 'Dictionary.txt'):
   ENT = int(number_words*32/3)
