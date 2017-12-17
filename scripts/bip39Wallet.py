@@ -27,12 +27,13 @@ def generate_change(xpub, number):
   index_child = [1, number]
   return path(xpub, index_child)
 
-entropy = 0xffffff789012345678901234567890123456789012345678901234567890abcd
-number_words = 24
+entropy = 0xffffff789012345678901234
+number_words = 12
 
 entropy_lenght = int(number_words*32/3/4)
 
 dictionary = 'Italian_dictionary.txt'
+dictionary = 'Dictionary.txt'
 passphrase = ''
 version = 'standard'
 
