@@ -8,7 +8,7 @@ Created on Sun Dec 10 16:53:56 2017
 from electrum_seed import from_mnemonic_to_seed_eletrcum, verify_mnemonic_electrum, from_entropy_to_mnemonic_int_electrum, from_mnemonic_int_to_mnemonic_electrum
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
-def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version = "standard", dictionary = 'Dictionary.txt'):
+def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version = "standard", dictionary = 'English_dictionary.txt'):
   verify = False
   while verify==False:
     mnemonic_int = from_entropy_to_mnemonic_int_electrum(entropy, number_words)
@@ -67,3 +67,7 @@ print('\nfirst change address: ', change0)
 print('second change address: ', change1)
 print('third change address: ', change2)
 print('fourth change address: ', change3)
+
+# rewrite memory
+entropy = 0x7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f
+mnemonic, entropy, xpub = generate_wallet_electrum(entropy, number_words, passphrase, version, dictionary)

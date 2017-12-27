@@ -8,7 +8,7 @@ Created on Mon Dec 11 09:17:49 2017
 from bip39 import from_entropy_to_mnemonic_int, from_mnemonic_int_to_mnemonic, from_mnemonic_to_seed
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
-def generate_wallet_bip39(entropy, number_words = 24, passphrase='', dictionary = 'Dictionary.txt'):
+def generate_wallet_bip39(entropy, number_words = 24, passphrase='', dictionary = 'English_dictionary.txt'):
   ENT = int(number_words*32/3)
   mnemonic_int = from_entropy_to_mnemonic_int(entropy, ENT)
   mnemonic = from_mnemonic_int_to_mnemonic(mnemonic_int, dictionary)
@@ -33,7 +33,7 @@ number_words = 12
 entropy_lenght = int(number_words*32/3/4)
 
 dictionary = 'Italian_dictionary.txt'
-dictionary = 'Dictionary.txt'
+dictionary = 'English_dictionary.txt'
 passphrase = ''
 version = 'standard'
 
