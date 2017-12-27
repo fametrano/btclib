@@ -27,6 +27,10 @@ def h160(inp):
   h1 = sha256(inp).digest()
   return hnew('ripemd160', h1).digest()
 
+def public_key_to_bc_address(inp, version=b'\x00'):
+  vh160 = version + h160(inp)
+  return b58encode_check(vh160)
+
 
 def bip32_isvalid_xkey(vbytes, depth, fingerprint, index, chain_code, key):
   assert len(key) == 33, "wrong length for key"
@@ -138,6 +142,21 @@ def bip32_ckd(extKey, child_index):
     P_bytes = (b'\x02' if (P[1] % 2 == 0) else b'\x03') + P[0].to_bytes(32, 'big')
     return bip32_compose_xkey(PUBLIC[network], depth, fingerprint, index, chain_code, P_bytes)
 
+# hdkeypath
+def path(xprv, index_child, version=b'\x00'):
+  xprv = bip32_ckd(xprv, index_child[0])
+  info_xprv = bip32_parse_xkey(xprv)
+  if index_child[1:] == []:
+    if (info_xprv["vbytes"] in PRIVATE):
+      xpub = bip32_xprvtoxpub(xprv)
+    elif (info_xprv["vbytes"] in PUBLIC):
+      xpub = xprv
+    else:
+      assert False
+    info_xpub = bip32_parse_xkey(xpub)
+    return public_key_to_bc_address(info_xpub['key'], version)
+  else:
+    return path(xprv, index_child[1:], version)
 
 def bip32_test():
   # == Test vector 1 ==
