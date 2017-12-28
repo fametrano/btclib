@@ -117,5 +117,5 @@ def test_vector():
   my_test_vector_5()
   my_test_vector_6()
   
-  
-test_vector()
+if __name__ == "__main__":
+  test_vector()

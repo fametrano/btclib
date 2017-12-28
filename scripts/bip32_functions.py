@@ -193,4 +193,5 @@ def bip32_test():
   xpub = bip32_xprvtoxpub(xprv)
   assert xpub == "xpub68NZiKmJWnxxS6aaHmn81bvJeTESw724CRDs6HbuccFQN9Ku14VQrADWgqbhhTHBaohPX4CjNLf9fq9MYo6oDaPPLPxSb7gwQN3ih19Zm4Y", "failure"
 
-bip32_test()
+if __name__ == "__main__":
+  bip32_test()

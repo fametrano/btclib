@@ -9,12 +9,12 @@ from electrum_seed import from_mnemonic_to_seed_eletrcum, verify_mnemonic_electr
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version = "standard", dictionary = 'English_dictionary.txt'):
-  verify = False
-  while verify==False:
+  is_verify = False
+  while not is_verify:
     mnemonic_int = from_entropy_to_mnemonic_int_electrum(entropy, number_words)
     mnemonic = from_mnemonic_int_to_mnemonic_electrum(mnemonic_int, dictionary)
-    verify = verify_mnemonic_electrum(mnemonic, version)
-    if verify==False:
+    is_verify = verify_mnemonic_electrum(mnemonic, version)
+    if not is_verify:
       entropy = entropy + 1
   seed = from_mnemonic_to_seed_eletrcum(mnemonic, passphrase)
   seed = int(seed, 16)
@@ -31,7 +31,7 @@ def generate_change(xpub, number):
   index_child = [1, number]
   return path(xpub, index_child)
 
-entropy = 0x545454545454545454545454545454545454545454545454545454545454666666
+entropy = 0x545454545454545453335454545454545454545454545454545454545454666666
 number_words = 24
 
 entropy_lenght = int(11*number_words/4)

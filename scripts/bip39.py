@@ -288,5 +288,5 @@ def test_vector():
   test_vector_23()
   test_vector_24()
 
-
-test_vector()
+if __name__ == "__main__":
+  test_vector()
