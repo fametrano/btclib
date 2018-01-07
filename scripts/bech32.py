@@ -107,10 +107,63 @@ def encode(hrp, witver, witprog):
         return None
     return ret
 
+def decode_my_segwit_address(bech):
+  '''
+  Decoding
+  Software interpreting a segwit address:
+    MUST verify that the human-readable part is "bc" for mainnet and "tb" for testnet.
+    MUST verify that the first decoded data value (the witness version) is between 0 and 16, inclusive.
+    Convert the rest of the data to bytes:
+      Translate the values to 5 bits, most significant bit first.
+      Re-arrange those bits into groups of 8 bits. Any incomplete group at the end MUST be 4 bits or less, MUST be all zeroes, and is discarded.
+      There MUST be between 2 and 40 groups, which are interpreted as the bytes of the witness program.
+  '''
+  hrp, data = bech32_decode(bech)
+  assert hrp in ('bc', 'tb')
+  assert data[0] in range(0,17)
+  data_bin = ''
+  for i in data[1:]:
+    data_bin += bin(i|32)[3:]
+  over = len(data_bin) % 8
+  assert over < 5
+  if over > 0:
+    assert int(data_bin[-over:], 2) == 0
+    data_bin = data_bin[:-over]
+  data_len = int(len(data_bin)/8)
+  data_byte = [0]*data_len
+  for i in range(0, data_len):
+    data_byte[i] = int(data_bin[i*8:(i+1)*8],2)
+  return data[0], data_byte
 
+  
+  
+  
+  
 bechbech='bc!1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx'
 
 
 bech1 = bech32_encode('bc', [1,2,3,4,5,6,7,8,9])
 
 print(bech32_decode(bechbech))
+
+
+
+def test_checksum_1():
+  test = 'BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4'
+  bc,data = bech32_decode(test)
+  data_bin = ''
+  for i in data:
+    data_bin += bin(i|32)[3:]
+  return data_bin
+  
+
+test_checksum_1()
+print(decode_my_segwit_address('BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4'))
+
+print(decode('bc', 'BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4'))
+
+
+
+
+
+
