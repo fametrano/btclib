@@ -58,11 +58,13 @@ def verify_mnemonic_and_xpub_electrum(mnemonic, xpub_electrum, version = "standa
   return seed
 
 def verify_mnemonic_electrum(mnemonic, version = "standard"):
-  s = bh2u(hmac.new(b"Seed version", mnemonic.encode('utf8'), sha512).digest()) 
+  s = bh2u(hmac.new(b"Seed version", mnemonic.encode('utf8'), sha512).digest())
   if s[0:2] == '01':
     return version == "standard"
   elif s[0:3] == '100':
     return version == "segwit"
+  elif s[0:3] == '101':
+    return version == "2FA"
   else:
     return False
   return True

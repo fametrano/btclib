@@ -37,6 +37,7 @@ number_words = 24
 entropy_lenght = int(11*number_words/4)
 
 dictionary = 'Italian_dictionary.txt'
+dictionary = 'English_dictionary.txt'
 passphrase = ''
 version = 'standard'
 
@@ -69,5 +70,5 @@ print('third change address: ', change2)
 print('fourth change address: ', change3)
 
 # rewrite memory
-entropy = 0x7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f
-mnemonic, entropy, xpub = generate_wallet_electrum(entropy, number_words, passphrase, version, dictionary)
+#entropy = 0x7f7f7f7f7
+#mnemonic, entropy, xpub = generate_wallet_electrum(entropy, number_words, passphrase, version, dictionary)

@@ -4,11 +4,22 @@ Created on Mon Dec 11 09:17:49 2017
 
 @author: dfornaro
 """
+# This script give you the basic functions in order to generate your own mnemonic phrase, without relying on a random function.
+# The randomness must be guaranteed by the entropy inserted as input. It is entirely entrusted to the user.
 
 from bip39 import from_entropy_to_mnemonic_int, from_mnemonic_int_to_mnemonic, from_mnemonic_to_seed
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 def generate_wallet_bip39(entropy, number_words = 24, passphrase='', dictionary = 'English_dictionary.txt'):
+  # Function that generate a valid BIP39 mnemonic and the related master extended public key, from a given entropy
+  # INPUT:
+  #   entropy: number large enough to guarantee randomness
+  #   number_words: number of words requested
+  #   passphrase: string used as passphrase
+  #   dictionary: string with the name of the dictionary file (.txt)
+  # OUTPUT:
+  #   mnemonic: mnemonic phrase with BIP39
+  #   xpub: master extended public key derived from the mnemonic phrase + passphrase
   ENT = int(number_words*32/3)
   mnemonic_int = from_entropy_to_mnemonic_int(entropy, ENT)
   mnemonic = from_mnemonic_int_to_mnemonic(mnemonic_int, dictionary)
@@ -17,17 +28,29 @@ def generate_wallet_bip39(entropy, number_words = 24, passphrase='', dictionary 
   seed_bytes = 64
   xprv = bip32_master_key(seed, seed_bytes)
   xpub = bip32_xprvtoxpub(xprv)
-  return mnemonic, entropy, xpub
+  return mnemonic, xpub
 
 def generate_receive(xpub, number):
+  # Function that generate a valid P2PKH receive address from an extended public key.
+  # INPUT:
+  #   xpub: extended public key
+  #   number: child index
+  # OUTPUT:
+  #   P2PKH receive address 
   index_child = [0, number]
   return path(xpub, index_child)
 
 def generate_change(xpub, number):
+  # Function that generate a valid P2PKH change address from an extended public key.
+  # INPUT:
+  #   xpub: extended public key
+  #   number: child index
+  # OUTPUT:
+  #   P2PKH change address 
   index_child = [1, number]
   return path(xpub, index_child)
 
-entropy = 0xffffff789012345678901234
+entropy = 0xf012003974d093eda670121023cd03bb
 number_words = 12
 
 entropy_lenght = int(number_words*32/3/4)
@@ -39,7 +62,7 @@ version = 'standard'
 
 
 print('Your entropy should have', entropy_lenght, 'hexadecimal digits')
-mnemonic, entropy, xpub = generate_wallet_bip39(entropy, number_words, passphrase, dictionary)
+mnemonic, xpub = generate_wallet_bip39(entropy, number_words, passphrase, dictionary)
 
 print('\nmnemonic: ', mnemonic)
 print('\nxpub: ', xpub)

@@ -5,12 +5,20 @@ Created on Mon Oct 16 09:29:43 2017
 @author: dfornaro
 """
 
+# This script give you the basic functions used in BIP39.
+
 from hashlib import sha256, sha512
 from pbkdf2 import PBKDF2
 import hmac
 
 
 def from_entropy_to_mnemonic_int(entropy, ENT):  
+  # Function that transform the entropy number in a vector of numbers with 11 bits each 
+  # INPUT:
+  #   entropy: number large enough to guarantee randomness
+  #   ENT: number of bits of entropy
+  # OUTPUT:
+  #   mnemonic_int: vector of numbers, each of this number with 11 bits each
   entropy_bytes = entropy.to_bytes(int(ENT/8), byteorder='big')
   checksum = sha256(entropy_bytes).digest()
   checksum_int = int.from_bytes(checksum, byteorder='big')
@@ -30,6 +38,12 @@ def from_entropy_to_mnemonic_int(entropy, ENT):
   return mnemonic_int
 
 def from_mnemonic_int_to_mnemonic(mnemonic_int, dictionary_txt):
+  # Function that transform the vector mnemonic_int computed in the previous function in a valid mnemonic phrase 
+  # INPUT:
+  #   mnemonic_int: vector of numbers, each of this number with 11 bits each
+  #   dictionary_txt: txt with the dictionary chosen
+  # OUTPUT:
+  #   mnemonic: valid BIP39 mnemonic phrase 
   dictionary  = open(dictionary_txt, 'r').readlines()
   mnemonic = ''
   for j in mnemonic_int:
@@ -38,11 +52,18 @@ def from_mnemonic_int_to_mnemonic(mnemonic_int, dictionary_txt):
   return mnemonic
 
 def from_mnemonic_to_seed(mnemonic, passphrase='TREZOR'):
+  # Function that derive the seed from the mnemonic phrase + the passphrase
+  # INPUT:
+  #   mnemonic: valid BIP39 mnemonic phrase
+  #   passphrase: passphrase used for the seed derivation ('TREZOR' as default for the BIP39 test vector)
+  # OUTPUT:
+  #   seed: seed for the BIP32 HD wallet  
   PBKDF2_ROUNDS = 2048
   return PBKDF2(mnemonic, 'mnemonic' + passphrase, iterations = PBKDF2_ROUNDS, macmodule = hmac, digestmodule = sha512).read(64).hex()
 
 
-
+# Test vectors
+# : https://github.com/trezor/python-mnemonic/blob/master/vectors.json
 
 def test_vector_1():
   entropy = 0x0
