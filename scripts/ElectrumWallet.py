@@ -5,10 +5,24 @@ Created on Sun Dec 10 16:53:56 2017
 @author: dfornaro
 """
 
+# This script give you the basic functions in order to generate your own Electrum mnemonic phrase and the corresponding wallet, without relying on a random function.
+# The randomness must be guaranteed by the entropy inserted as input. It is entirely entrusted to the user.
+
 from electrum_seed import from_mnemonic_to_seed_eletrcum, verify_mnemonic_electrum, from_entropy_to_mnemonic_int_electrum, from_mnemonic_int_to_mnemonic_electrum
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version = "standard", dictionary = 'English_dictionary.txt'):
+  # Function that generate a valid electrum mnemonic and the related master extended public key, from a given entropy
+  # INPUT:
+  #   entropy: number large enough to guarantee randomness
+  #   number_words: number of words requested
+  #   passphrase: string used as passphrase
+  #   version: version required for the Electrum wallet
+  #   dictionary: string with the name of the dictionary file (.txt)
+  # OUTPUT:
+  #   mnemonic: Electrum mnemonic phrase
+  #   entropy: final entropy really used
+  #   xpub: master extended public key derived from the mnemonic phrase + passphrase
   is_verify = False
   while not is_verify:
     mnemonic_int = from_entropy_to_mnemonic_int_electrum(entropy, number_words)
@@ -24,10 +38,22 @@ def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version 
   return mnemonic, entropy, xpub
 
 def generate_receive(xpub, number):
+  # Function that generate a valid P2PKH receive address from an extended public key.
+  # INPUT:
+  #   xpub: extended public key
+  #   number: child index
+  # OUTPUT:
+  #   P2PKH receive address 
   index_child = [0, number]
   return path(xpub, index_child)
 
 def generate_change(xpub, number):
+  # Function that generate a valid P2PKH change address from an extended public key.
+  # INPUT:
+  #   xpub: extended public key
+  #   number: child index
+  # OUTPUT:
+  #   P2PKH change address 
   index_child = [1, number]
   return path(xpub, index_child)
 

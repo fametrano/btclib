@@ -5,6 +5,8 @@ Created on Fri Nov 17 14:34:59 2017
 @author: dfornaro
 """
 
+# This script give you the basic functions used for the Electrum seed and its mnemonic phrase.
+
 from hashlib import sha512
 from pbkdf2 import PBKDF2
 import hmac
@@ -12,6 +14,12 @@ from bip32_functions import bip32_master_key, bip32_xprvtoxpub, bip32_ckd
 import binascii
 
 def from_entropy_to_mnemonic_int_electrum(entropy, number_words):
+  # Function that transform the entropy number in a vector of numbers with 11 bits each 
+  # INPUT:
+  #   entropy: number large enough to guarantee randomness
+  #   number_words: number of words required in the mnemonic phrase
+  # OUTPUT:
+  #   mnemonic_int: vector of numbers, each of this number with 11 bits each
   assert entropy < 2**(11*number_words)
   entropy_bin = bin(entropy)
   while len(entropy_bin)< number_words*11+2:
@@ -23,6 +31,12 @@ def from_entropy_to_mnemonic_int_electrum(entropy, number_words):
   return mnemonic_int
 
 def from_mnemonic_int_to_mnemonic_electrum(mnemonic_int, dictionary_txt):
+  # Function that transform the vector mnemonic_int computed in the previous function in a mnemonic phrase 
+  # INPUT:
+  #   mnemonic_int: vector of numbers, each of this number with 11 bits each
+  #   dictionary_txt: txt with the dictionary chosen
+  # OUTPUT:
+  #   mnemonic: candidate Electrum mnemonic phrase 
   dictionary  = open(dictionary_txt, 'r').readlines()
   mnemonic = ''
   for j in mnemonic_int:
@@ -31,14 +45,29 @@ def from_mnemonic_int_to_mnemonic_electrum(mnemonic_int, dictionary_txt):
   return mnemonic
 
 def from_mnemonic_to_seed_eletrcum(mnemonic, passphrase=''):
+  # Function that derive the seed from the mnemonic phrase + the passphrase
+  # INPUT:
+  #   mnemonic: Electrum mnemonic phrase
+  #   passphrase: passphrase used for the seed derivation
+  # OUTPUT:
+  #   seed: seed for the BIP32 HD wallet 
   PBKDF2_ROUNDS = 2048
   return PBKDF2(mnemonic, 'electrum' + passphrase, iterations = PBKDF2_ROUNDS, macmodule = hmac, digestmodule = sha512).read(64).hex()
 
 def bh2u(x):
+  # Hash function used in order to verify an Electrum menominc phrase
   return binascii.hexlify(x).decode('ascii')
 
 
 def verify_mnemonic_and_xpub_electrum(mnemonic, xpub_electrum, version = "standard", passphrase = ''):
+  # Function used to verify the correctness of an Electrum mnemonic and its xpub wrt its version
+  # INPUT:
+  #   mnemonic: Electrum mnemonic phrase
+  #   xpub_electrum: extended public key (shown by Electrum)
+  #   version: version that we need to verify
+  #   passphrase: passphrase used for the seed derivation
+  # OUTPUT:
+  #   seed: seed for the BIP32 HD wallet 
   s = bh2u(hmac.new(b"Seed version", mnemonic.encode('utf8'), sha512).digest())
   seed = from_mnemonic_to_seed_eletrcum(mnemonic, passphrase)
   seed = int(seed, 16)
@@ -58,6 +87,12 @@ def verify_mnemonic_and_xpub_electrum(mnemonic, xpub_electrum, version = "standa
   return seed
 
 def verify_mnemonic_electrum(mnemonic, version = "standard"):
+  # Function used to verify the correctness of an Electrum mnemonic wrt its version
+  # INPUT:
+  #   mnemonic: Electrum mnemonic phrase
+  #   version: version that we need to verify
+  # OUTPUT:
+  #   boolean: True if the version matches, False otherwise 
   s = bh2u(hmac.new(b"Seed version", mnemonic.encode('utf8'), sha512).digest())
   if s[0:2] == '01':
     return version == "standard"
@@ -69,6 +104,10 @@ def verify_mnemonic_electrum(mnemonic, version = "standard"):
     return False
   return True
 
+### Test Vectors
+# These test vectors are obtained directly with Electrum:
+# First a new mnemonic phrase was generated, through Electrum software, with a chosen version
+# Then we check that the mnemonic phrase match with the version and that generates the corresponding xpub
 
 def my_test_vector_1():
   mnemonic = "term gain fish all ivory talent gold either trap today balance kingdom"

@@ -24,15 +24,27 @@ PUBLIC  = [BITCOIN_PUBLIC,  TESTNET_PUBLIC, BITCOIN_SEGWIT_PUBLIC]
 
 
 def h160(inp):
+  # Funcion that computes the HASH160
   h1 = sha256(inp).digest()
   return hnew('ripemd160', h1).digest()
 
 def public_key_to_bc_address(inp, version=b'\x00'):
+  # Function that computes the address from a public key
   vh160 = version + h160(inp)
   return b58encode_check(vh160)
 
 
 def bip32_isvalid_xkey(vbytes, depth, fingerprint, index, chain_code, key):
+  # Function that checks for the validity of the component of an extended key
+  # INPUT:
+  #   vbytes: 4 bytes for the version
+  #   depth: 1 byte for the depth
+  #   fingerprint: 4 bytes for the fingerprint
+  #   index: 4 bytes for the child index
+  #   chain_code: 32 bytes for the chain code
+  #   key: 33 bytes for the private or public key
+  # OUTPUT:
+  #   none
   assert len(key) == 33, "wrong length for key"
   if (vbytes in PUBLIC):
     assert key[0] in (2, 3)
@@ -40,9 +52,7 @@ def bip32_isvalid_xkey(vbytes, depth, fingerprint, index, chain_code, key):
     assert key[0] == 0
   else:
     raise Exception("invalix key[0] prefix '%s'" % type(key[0]).__name__)
-
   assert int.from_bytes(key[1:33], 'big') < order, "invalid key"
-
   assert len(depth) == 1, "wrong length for depth"
   assert len(fingerprint) == 4, "wrong length for fingerprint"
   assert len(index) == 4, "wrong length for index"
@@ -50,6 +60,11 @@ def bip32_isvalid_xkey(vbytes, depth, fingerprint, index, chain_code, key):
 
 
 def bip32_parse_xkey(xkey):
+  # Function that parses an extended key
+  # INPUT:
+  #   xkey: extended key
+  # OUTPUT:
+  #   info: dictionary with all the informations extractable from the extended key 
   decoded = b58decode_check(xkey)
   assert len(decoded) == 78, "wrong length for decoded xkey"
   info = {"vbytes": decoded[:4],
@@ -65,6 +80,16 @@ def bip32_parse_xkey(xkey):
 
 
 def bip32_compose_xkey(vbytes, depth, fingerprint, index, chain_code, key):
+  # Function that composes an extended key
+  # INPUT:
+  #   vbytes: 4 bytes for the version
+  #   depth: 1 byte for the depth
+  #   fingerprint: 4 bytes for the fingerprint
+  #   index: 4 bytes for the child index
+  #   chain_code: 32 bytes for the chain code
+  #   key: 33 bytes for the private or public key
+  # OUTPUT:
+  #   xkey: extended key
   bip32_isvalid_xkey(vbytes, depth, fingerprint, index, chain_code, key)
   xkey = vbytes + \
          depth + \
@@ -76,6 +101,11 @@ def bip32_compose_xkey(vbytes, depth, fingerprint, index, chain_code, key):
     
 
 def bip32_xprvtoxpub(xprv):
+  # Function that derives the extended public key from the extended private key
+  # INPUT:
+  #   xprv: extended private key
+  # OUTPUT:
+  #   xpub: extended public key
   decoded = b58decode_check(xprv)
   assert decoded[45] == 0, "not a private key"
   p = int.from_bytes(decoded[46:], 'big')
@@ -87,6 +117,13 @@ def bip32_xprvtoxpub(xprv):
 
 
 def bip32_master_key(seed, seed_bytes, vbytes = PRIVATE[0]):
+  # Function that derives the master extended private key from the seed
+  # INPUT:
+  #   seed: BIP 32 seed
+  #   seed_bytes: number of the bytes of the seed
+  #   vbytes: version of the master extended private key
+  # OUTPUT:
+  #   xprv: master extended private key
   hashValue = HMAC(b"Bitcoin seed", seed.to_bytes(seed_bytes, 'big'), sha512).digest()
   p_bytes = hashValue[:32]
   p = int(p_bytes.hex(), 16) % order
@@ -99,9 +136,7 @@ def bip32_master_key(seed, seed_bytes, vbytes = PRIVATE[0]):
 # Child Key Derivation
 def bip32_ckd(extKey, child_index):
   parent = bip32_parse_xkey(extKey)
-  
   depth = (int.from_bytes(parent["depth"], 'big') + 1).to_bytes(1, 'big')
-
   if parent["vbytes"] in PRIVATE:
     network = PRIVATE.index(parent["vbytes"])
     parent_prvkey = int.from_bytes(parent["key"][1:], 'big')
