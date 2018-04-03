@@ -2,10 +2,10 @@
 """
 Created on Fri Nov 17 14:34:59 2017
 
-@author: dfornaro
+@author: dfornaro, fametrano
 """
 
-# This script give you the basic functions used for the Electrum seed and its mnemonic phrase.
+# This script gives you the basic functions used for the Electrum seed and its mnemonic phrase.
 
 from hashlib import sha512
 from pbkdf2 import PBKDF2
@@ -14,7 +14,7 @@ from bip32_functions import bip32_master_key, bip32_xprvtoxpub, bip32_ckd
 import binascii
 
 def from_entropy_to_mnemonic_int_electrum(entropy, number_words):
-  # Function that transform the entropy number in a vector of numbers with 11 bits each 
+  # Function that transforms the entropy number in a vector of numbers with 11 bits each 
   # INPUT:
   #   entropy: number large enough to guarantee randomness
   #   number_words: number of words required in the mnemonic phrase
@@ -31,7 +31,7 @@ def from_entropy_to_mnemonic_int_electrum(entropy, number_words):
   return mnemonic_int
 
 def from_mnemonic_int_to_mnemonic_electrum(mnemonic_int, dictionary_txt):
-  # Function that transform the vector mnemonic_int computed in the previous function in a mnemonic phrase 
+  # Function that transforms the vector mnemonic_int computed in the previous function in a mnemonic phrase 
   # INPUT:
   #   mnemonic_int: vector of numbers, each of this number with 11 bits each
   #   dictionary_txt: txt with the dictionary chosen
@@ -45,7 +45,7 @@ def from_mnemonic_int_to_mnemonic_electrum(mnemonic_int, dictionary_txt):
   return mnemonic
 
 def from_mnemonic_to_seed_eletrcum(mnemonic, passphrase=''):
-  # Function that derive the seed from the mnemonic phrase + the passphrase
+  # Function that derives the seed from the mnemonic phrase + the passphrase
   # INPUT:
   #   mnemonic: Electrum mnemonic phrase
   #   passphrase: passphrase used for the seed derivation
@@ -107,7 +107,7 @@ def verify_mnemonic_electrum(mnemonic, version = "standard"):
 ### Test Vectors
 # These test vectors are obtained directly with Electrum:
 # First a new mnemonic phrase was generated, through Electrum software, with a chosen version
-# Then we check that the mnemonic phrase match with the version and that generates the corresponding xpub
+# Then we check that the mnemonic phrase matches with the version and that generates the corresponding xpub
 
 def my_test_vector_1():
   mnemonic = "term gain fish all ivory talent gold either trap today balance kingdom"
@@ -147,8 +147,6 @@ def my_test_vector_6():
   xpub_electrum = "zpub6nfRLg2gunSr2LyRpGxzW5pdrvtHxLS5JzNtGWdef5M7wKs3m4CiyzPDe3zXGFLqABKK1gA41mXgKq3jyfgcH4nsCzWfBVsPSpJvFEDCUzT"
   version = "segwit"
   return verify_mnemonic_and_xpub_electrum(mnemonic, xpub_electrum, version, passphrase)
-
-
 
 def test_vector():
   my_test_vector_1()

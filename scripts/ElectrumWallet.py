@@ -2,17 +2,17 @@
 """
 Created on Sun Dec 10 16:53:56 2017
 
-@author: dfornaro
+@author: dfornaro, fametrano
 """
 
-# This script give you the basic functions in order to generate your own Electrum mnemonic phrase and the corresponding wallet, without relying on a random function.
-# The randomness must be guaranteed by the entropy inserted as input. It is entirely entrusted to the user.
+# This script gives you the basic functions to generate your own Electrum mnemonic phrase and the corresponding wallet, without relying on a random function.
+# The randomness must be guaranteed by the entropy inserted as input. This entropy is entirely entrusted to the user.
 
 from electrum_seed import from_mnemonic_to_seed_eletrcum, verify_mnemonic_electrum, from_entropy_to_mnemonic_int_electrum, from_mnemonic_int_to_mnemonic_electrum
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version = "standard", dictionary = 'English_dictionary.txt'):
-  # Function that generate a valid electrum mnemonic and the related master extended public key, from a given entropy
+  # Function that generates a valid electrum mnemonic and the related master extended public key, from a given entropy and with a specific version
   # INPUT:
   #   entropy: number large enough to guarantee randomness
   #   number_words: number of words requested
@@ -38,7 +38,7 @@ def generate_wallet_electrum(entropy, number_words = 24, passphrase='', version 
   return mnemonic, entropy, xpub
 
 def generate_receive(xpub, number):
-  # Function that generate a valid P2PKH receive address from an extended public key.
+  # Function that generates a valid P2PKH receive address from an extended public key.
   # INPUT:
   #   xpub: extended public key
   #   number: child index
@@ -48,7 +48,7 @@ def generate_receive(xpub, number):
   return path(xpub, index_child)
 
 def generate_change(xpub, number):
-  # Function that generate a valid P2PKH change address from an extended public key.
+  # Function that generates a valid P2PKH change address from an extended public key.
   # INPUT:
   #   xpub: extended public key
   #   number: child index
@@ -57,16 +57,22 @@ def generate_change(xpub, number):
   index_child = [1, number]
   return path(xpub, index_child)
 
+# entropy is entered by the user
 entropy = 0x545454545454545453335454545454545454545454545454545454545454666666
-number_words = 24
 
+# number of words chosen by the user:
+number_words = 24
 entropy_lenght = int(11*number_words/4)
 
+# dictionary chosen by the user:
 dictionary = 'Italian_dictionary.txt'
 dictionary = 'English_dictionary.txt'
-passphrase = ''
-version = 'standard'
 
+# passphrase chosen by the user:
+passphrase = ''
+
+# version chosen by the user:
+version = 'standard'
 
 print('Your entropy should have', entropy_lenght, 'hexadecimal digits')
 mnemonic, entropy, xpub = generate_wallet_electrum(entropy, number_words, passphrase, version, dictionary)
@@ -84,7 +90,6 @@ change1 = generate_change(xpub, 1)
 change2 = generate_change(xpub, 2)
 change3 = generate_change(xpub, 3)
 
-
 print('\nfirst receive address: ', receive0)
 print('second receive address: ', receive1)
 print('third receive address: ', receive2)
@@ -94,7 +99,3 @@ print('\nfirst change address: ', change0)
 print('second change address: ', change1)
 print('third change address: ', change2)
 print('fourth change address: ', change3)
-
-# rewrite memory
-#entropy = 0x7f7f7f7f7
-#mnemonic, entropy, xpub = generate_wallet_electrum(entropy, number_words, passphrase, version, dictionary)

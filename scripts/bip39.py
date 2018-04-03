@@ -2,18 +2,17 @@
 """
 Created on Mon Oct 16 09:29:43 2017
 
-@author: dfornaro
+@author: dfornaro, fametrano
 """
 
-# This script give you the basic functions used in BIP39.
+# This script gives you the basic functions used in BIP39.
 
 from hashlib import sha256, sha512
 from pbkdf2 import PBKDF2
 import hmac
 
-
 def from_entropy_to_mnemonic_int(entropy, ENT):  
-  # Function that transform the entropy number in a vector of numbers with 11 bits each 
+  # Function that transforms the entropy number in a vector of numbers with 11 bits each 
   # INPUT:
   #   entropy: number large enough to guarantee randomness
   #   ENT: number of bits of entropy
@@ -38,7 +37,7 @@ def from_entropy_to_mnemonic_int(entropy, ENT):
   return mnemonic_int
 
 def from_mnemonic_int_to_mnemonic(mnemonic_int, dictionary_txt):
-  # Function that transform the vector mnemonic_int computed in the previous function in a valid mnemonic phrase 
+  # Function that transforms the vector mnemonic_int computed in the previous function in a valid mnemonic phrase 
   # INPUT:
   #   mnemonic_int: vector of numbers, each of this number with 11 bits each
   #   dictionary_txt: txt with the dictionary chosen
@@ -52,7 +51,7 @@ def from_mnemonic_int_to_mnemonic(mnemonic_int, dictionary_txt):
   return mnemonic
 
 def from_mnemonic_to_seed(mnemonic, passphrase='TREZOR'):
-  # Function that derive the seed from the mnemonic phrase + the passphrase
+  # Function that derives the seed from the mnemonic phrase + the passphrase
   # INPUT:
   #   mnemonic: valid BIP39 mnemonic phrase
   #   passphrase: passphrase used for the seed derivation ('TREZOR' as default for the BIP39 test vector)
@@ -280,8 +279,6 @@ def test_vector_24():
   seed = from_mnemonic_to_seed(mnemonic)
   assert(seed == "01f5bced59dec48e362f2c45b5de68b9fd6c92c6634f44d6d40aab69056506f0e35524a518034ddc1192e1dacd32c1ed3eaa3c3b131c88ed8e7e54c49a5d0998")
   return
-
-
 
 def test_vector():
   test_vector_1()

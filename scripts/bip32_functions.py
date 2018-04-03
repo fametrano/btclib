@@ -1,10 +1,11 @@
-
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct 27 09:41:51 2017
 
 @author: dfornaro, fametrano
 """
+
+# This script gives you the basic functions used in the Hierarchical Deterministic Wallet defined in BIP32
 
 from secp256k1 import order, G, pointMultiply, pointAdd, a, b, prime
 from hmac import HMAC
@@ -22,7 +23,6 @@ BITCOIN_SEGWIT_PUBLIC = b'\x04\xb2\x47\x46'
 PRIVATE = [BITCOIN_PRIVATE, TESTNET_PRIVATE, BITCOIN_SEGWIT_PRIVATE]
 PUBLIC  = [BITCOIN_PUBLIC,  TESTNET_PUBLIC, BITCOIN_SEGWIT_PUBLIC]
 
-
 def h160(inp):
   # Funcion that computes the HASH160
   h1 = sha256(inp).digest()
@@ -32,7 +32,6 @@ def public_key_to_bc_address(inp, version=b'\x00'):
   # Function that computes the address from a public key
   vh160 = version + h160(inp)
   return b58encode_check(vh160)
-
 
 def bip32_isvalid_xkey(vbytes, depth, fingerprint, index, chain_code, key):
   # Function that checks for the validity of the component of an extended key
@@ -58,7 +57,6 @@ def bip32_isvalid_xkey(vbytes, depth, fingerprint, index, chain_code, key):
   assert len(index) == 4, "wrong length for index"
   assert len(chain_code) == 32, "wrong length for chain_code"
 
-
 def bip32_parse_xkey(xkey):
   # Function that parses an extended key
   # INPUT:
@@ -77,7 +75,6 @@ def bip32_parse_xkey(xkey):
   bip32_isvalid_xkey(info["vbytes"], info["depth"], info["fingerprint"], \
                      info["index"], info["chain_code"], info["key"])
   return info
-
 
 def bip32_compose_xkey(vbytes, depth, fingerprint, index, chain_code, key):
   # Function that composes an extended key
@@ -98,7 +95,6 @@ def bip32_compose_xkey(vbytes, depth, fingerprint, index, chain_code, key):
          chain_code + \
          key
   return b58encode_check(xkey)
-    
 
 def bip32_xprvtoxpub(xprv):
   # Function that derives the extended public key from the extended private key
@@ -114,7 +110,6 @@ def bip32_xprvtoxpub(xprv):
   network = PRIVATE.index(decoded[:4])
   xpub = PUBLIC[network] + decoded[4:45] + P_bytes
   return b58encode_check(xpub)
-
 
 def bip32_master_key(seed, seed_bytes, vbytes = PRIVATE[0]):
   # Function that derives the master extended private key from the seed
@@ -132,9 +127,16 @@ def bip32_master_key(seed, seed_bytes, vbytes = PRIVATE[0]):
   xprv = bip32_compose_xkey(vbytes, b'\x00', b'\x00\x00\x00\x00', b'\x00\x00\x00\x00', chain_code, p_bytes)
   return xprv
 
-
 # Child Key Derivation
 def bip32_ckd(extKey, child_index):
+  # Function that computes the child key derivation. 
+  # Normal or hardened derivation depends on the child index.
+  # If the parent key is a public key, this function gives you the public child key. (normal derivation)
+  # INPUT:
+  #   extKey: extended parent key, it could be public or private
+  #   child_index: index of the child, if less than 0x80000000 we will have a normal derivation, hardened otherwise
+  # OUTPUT:
+  #   extKey: extended child key, it could be public or private
   parent = bip32_parse_xkey(extKey)
   depth = (int.from_bytes(parent["depth"], 'big') + 1).to_bytes(1, 'big')
   if parent["vbytes"] in PRIVATE:
@@ -178,20 +180,26 @@ def bip32_ckd(extKey, child_index):
     return bip32_compose_xkey(PUBLIC[network], depth, fingerprint, index, chain_code, P_bytes)
 
 # hdkeypath
-def path(xprv, index_child, version=b'\x00'):
-  xprv = bip32_ckd(xprv, index_child[0])
-  info_xprv = bip32_parse_xkey(xprv)
+def path(extKey, index_child, version=b'\x00'):
+  # Recursive function that calculates the child key, following a "path". 
+  # INPUT:
+  #   extKey: extended key from which you want to start the path, it could be public or private
+  #   index_child: vector of indeces of the path: [0,1,2] should be third child of the second child of the first child.
+  # OUTPUT:
+  #   extKey: extended child key, it could be public or private
+  extKey = bip32_ckd(extKey, index_child[0])
+  info_xprv = bip32_parse_xkey(extKey)
   if index_child[1:] == []:
     if (info_xprv["vbytes"] in PRIVATE):
-      xpub = bip32_xprvtoxpub(xprv)
+      xpub = bip32_xprvtoxpub(extKey)
     elif (info_xprv["vbytes"] in PUBLIC):
-      xpub = xprv
+      xpub = extKey
     else:
       assert False
     info_xpub = bip32_parse_xkey(xpub)
     return public_key_to_bc_address(info_xpub['key'], version)
   else:
-    return path(xprv, index_child[1:], version)
+    return path(extKey, index_child[1:], version)
 
 def bip32_test():
   # == Test vector 1 ==

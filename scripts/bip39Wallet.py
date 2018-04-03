@@ -2,10 +2,11 @@
 """
 Created on Mon Dec 11 09:17:49 2017
 
-@author: dfornaro
+@author: dfornaro, fametrano
 """
-# This script give you the basic functions in order to generate your own mnemonic phrase, without relying on a random function.
-# The randomness must be guaranteed by the entropy inserted as input. It is entirely entrusted to the user.
+
+# This script gives you the basic functions to generate your own mnemonic phrase, without relying on a random function.
+# The randomness must be guaranteed by the entropy inserted as input. This entropy is entirely entrusted to the user.
 
 from bip39 import from_entropy_to_mnemonic_int, from_mnemonic_int_to_mnemonic, from_mnemonic_to_seed
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
@@ -50,16 +51,19 @@ def generate_change(xpub, number):
   index_child = [1, number]
   return path(xpub, index_child)
 
+# entropy is entered by the user:
 entropy = 0xf012003974d093eda670121023cd03bb
-number_words = 12
 
+# number of words chosen by the user:
+number_words = 12
 entropy_lenght = int(number_words*32/3/4)
 
+# dictionary chosen by the user:
 dictionary = 'Italian_dictionary.txt'
 dictionary = 'English_dictionary.txt'
-passphrase = ''
-version = 'standard'
 
+# passphrase chosen by the user:
+passphrase = ''
 
 print('Your entropy should have', entropy_lenght, 'hexadecimal digits')
 mnemonic, xpub = generate_wallet_bip39(entropy, number_words, passphrase, dictionary)
@@ -76,7 +80,6 @@ change0 = generate_change(xpub, 0)
 change1 = generate_change(xpub, 1)
 change2 = generate_change(xpub, 2)
 change3 = generate_change(xpub, 3)
-
 
 print('\nfirst receive address: ', receive0)
 print('second receive address: ', receive1)

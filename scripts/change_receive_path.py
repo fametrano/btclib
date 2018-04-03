@@ -2,7 +2,7 @@
 """
 Created on Mon Nov 20 12:26:47 2017
 
-@author: dfornaro
+@author: dfornaro, fametrano
 """
 
 # This script is used to test the HD path used by some Bitcoin Wallets.
@@ -13,7 +13,7 @@ from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
 
 #### Electrum path derivation (bip39) ####
 # Electrum gives also the possibility to restore a BIP39 wallet.
-# After changed the version for the addresses, we take from Electrum a mnemonic phrase and 2 addresses (change and receive).
+# After changed the version of the addresses, we take from Electrum a mnemonic phrase and 2 addresses (change and receive).
 # Our goal is to find the path needed to derive the addreeses from the mnemonic phrase:
 
 mnemonic = 'army van defense carry jealous true garbage claim echo media make crunch'
@@ -37,7 +37,7 @@ assert path(xprv, index_child, version) == change
 #### Bitcoin-core path derivation ####
 # Bitcoin core doesn't implement BIP39 up to now.
 # It starts directly from the master private key.
-# After changed the version for the addresses, we consider the master key and 2 addresses (change and receive).
+# After changed the version of the addresses, we consider the master key and 2 addresses (change and receive).
 # Our goal is to find the path needed to derive the addreeses from the master private key:
 
 xprv = 'xprv9s21ZrQH143K2oxHiQ5f7D7WYgXD9h6HAXDBuMoozDGGiYHWsq7TLBj2yvGuHTLSPCaFmUyN1v3fJRiY2A4YuNSrqQMPVLZKt76goL6LP7L'
@@ -52,8 +52,7 @@ assert path(xprv, index_child, version) == receive
 index_child = [0x80000000, 0x80000001, 0x80000001]
 assert path(xprv, index_child, version) == change
 
-
-### Electrum standard path derivation
+#### Electrum standard path derivation ####
 # The scope of this section is to find out the HD path used by Electrum:
 # First we generate a new mnemonic phrase and some addresses (change and receive), using Electrum.
 # Then we check their derivation.
@@ -93,26 +92,23 @@ change2 = '16NLYkKtvYhW1Jp86tbocku3gxWcvitY1w'
 index_child = [1, 2]
 assert path(xprv, index_child) == change2
 
-
-
-### Bitcoin-core path derivation
+#### Bitcoin-core path derivation ####
 # The scope of this section is to find out the HD path used by Bitcoin-core:
 # First we generate a new xprv and some addresses, using Bitcoin-core.
 # Then we check their derivation.
 
 
 xprv = 'xprv9s21ZrQH143K2ZP8tyNiUtgoezZosUkw9hhir2JFzDhcUWKz8qFYk3cxdgSFoCMzt8E2Ubi1nXw71TLhwgCfzqFHfM5Snv4zboSebePRmLS'
-add1 = '1DyfBWxhVLmrJ7keyiHeMbt7N3UdeGU4G5' # hdkeypath=m/0'/0'/0'
+add1 = '1DyfBWxhVLmrJ7keyiHeMbt7N3UdeGU4G5' # hdkeypath=m/0'/0'/463'
 add2 = '11x2mn59Qy43DjisZWQGRResjyQmgthki' # hdkeypath=m/0'/0'/267'
 
-index_child = [0x80000000, 0x80000000, 0x80000000+463]
+index_child = [0x80000000, 0x80000000, 0x80000000 + 463]
 assert path(xprv, index_child) == add1
 
 index_child = [0x80000000, 0x80000000, 0x80000000 + 267]
 assert path(xprv, index_child) == add2
 
-
-### Bitcoin-core testnet path derivation
+#### Bitcoin-core testnet path derivation ####
 # The scope of this section is to find out the HD path used by Bitcoin-core:
 # First we generate a new xprv and some testnet addresses, using Bitcoin-core.
 # Then we check their derivation.
@@ -123,10 +119,10 @@ add2 = 'mfaUnRFxVvf55uD1P3zWXpprN1EJcKcGrb' # hdkeypath=m/0'/1'/150'
 
 version = 0x6f.to_bytes(1, 'big')
 
-index_child = [0x80000000, 0x80000000, 0x80000000+51]
+index_child = [0x80000000, 0x80000000, 0x80000000 + 51]
 assert path(tprv, index_child, version) == add1
 
-index_child = [0x80000000, 0x80000000 +1, 0x80000000 + 150]
+index_child = [0x80000000, 0x80000000 + 1, 0x80000000 + 150]
 assert path(tprv, index_child, version) == add2
 
 
