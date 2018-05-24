@@ -21,7 +21,7 @@ checkPoint(G)
 
 # must be a prime for the cyclic group not to have subgroups
 order = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
-
+          
 from FiniteFields import modInv
 
 def pointDouble(P):
@@ -47,14 +47,26 @@ def pointAdd(P, Q):
   y = (lam*(P[0]-x)-P[1]) % prime
   return (x, y)
 
-# double & add
-def pointMultiply(n, P):
+# double & add recursive
+def pointMultiplyRecursive(n, P):
   n = n % order
   if n == 0 or P[0] is None:
     return (None, None)
   if n == 1:
     return P
   if n % 2 == 1: # addition when n is odd
-    return pointAdd(P, pointMultiply(n - 1, P))
+    return pointAdd(P, pointMultiplyRecursive(n - 1, P))
   else:          # doubling when n is even
-    return pointMultiply(n//2, pointDouble(P))
+    return pointMultiplyRecursive(n//2, pointDouble(P))
+
+# double & add
+def pointMultiply(n, P):
+  n = n % order
+  result = (None, None) # initializing result to (None,None)
+  temp = P              # temp variable to store doubled values
+  while n>0 :
+    if n & 1:
+      result = pointAdd(result,temp) # adding when lsb of n is 1
+    temp = pointDouble(temp) # doubling
+    n = n>>1            # shift bits of factor
+  return result
