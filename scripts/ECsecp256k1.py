@@ -47,18 +47,6 @@ def pointAdd(P, Q):
   y = (lam*(P[0]-x)-P[1]) % prime
   return (x, y)
 
-# recursive double & add
-def pointMultiplyRecursive(n, P):
-  n = n % order
-  if n == 0 or P[0] is None:
-    return (None, None)
-  if n == 1:
-    return P
-  if n % 2 == 1: # addition when n is odd
-    return pointAdd(P, pointMultiplyRecursive(n - 1, P))
-  else:          # doubling when n is even
-    return pointMultiplyRecursive(n//2, pointDouble(P))
-
 # efficient double & add, using binary decomposition
 def pointMultiply(n, P):
   n = n % order         # the group is cyclic
