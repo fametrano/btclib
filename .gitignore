@@ -100,3 +100,5 @@ ENV/
 # mypy
 .mypy_cache/
 scripts/.vscode/settings.json
+scripts/.vscode/launch.json
+scripts/.vscode
