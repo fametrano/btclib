@@ -7,6 +7,9 @@ Created on Sun Dec 10 16:53:56 2017
 
 # This script gives you the basic functions to generate your own Electrum mnemonic phrase and the corresponding wallet, without relying on a random function.
 # The randomness must be guaranteed by the entropy inserted as input. This entropy is entirely entrusted to the user.
+#
+# English_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
+# Italian_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/italian.txt
 
 from electrum_seed import from_mnemonic_to_seed_eletrcum, verify_mnemonic_electrum, from_entropy_to_mnemonic_int_electrum, from_mnemonic_int_to_mnemonic_electrum
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path

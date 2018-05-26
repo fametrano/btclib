@@ -6,6 +6,10 @@ Created on Fri Nov 17 14:34:59 2017
 """
 
 # This script gives you the basic functions used for the Electrum seed and its mnemonic phrase.
+#
+# English_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
+# Italian_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/italian.txt
+
 
 from hashlib import sha512
 from pbkdf2 import PBKDF2

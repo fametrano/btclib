@@ -61,8 +61,11 @@ def from_mnemonic_to_seed(mnemonic, passphrase='TREZOR'):
   return PBKDF2(mnemonic, 'mnemonic' + passphrase, iterations = PBKDF2_ROUNDS, macmodule = hmac, digestmodule = sha512).read(64).hex()
 
 
-# Test vectors
-# : https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+# Test vectors: 
+# https://github.com/trezor/python-mnemonic/blob/master/vectors.json
+#
+# English_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
+# Italian_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/italian.txt
 
 def test_vector_1():
   entropy = 0x0

@@ -7,6 +7,9 @@ Created on Mon Dec 11 09:17:49 2017
 
 # This script gives you the basic functions to generate your own mnemonic phrase, without relying on a random function.
 # The randomness must be guaranteed by the entropy inserted as input. This entropy is entirely entrusted to the user.
+#
+# English_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
+# Italian_dictionary: https://github.com/bitcoin/bips/blob/master/bip-0039/italian.txt
 
 from bip39 import from_entropy_to_mnemonic_int, from_mnemonic_int_to_mnemonic, from_mnemonic_to_seed
 from bip32_functions import bip32_master_key, bip32_xprvtoxpub, path
