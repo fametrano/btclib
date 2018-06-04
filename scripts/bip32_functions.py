@@ -7,7 +7,7 @@ Created on Mon Oct 27 09:41:51 2017
 
 # This script gives you the basic functions used in the Hierarchical Deterministic Wallet defined in BIP32
 
-from secp256k1 import order, G, pointMultiply, pointAdd, a, b, prime
+from ECsecp256k1 import order, G, pointMultiply, pointAdd, a, b, prime
 from hmac import HMAC
 from hashlib import new as hnew
 from hashlib import sha512, sha256
