@@ -9,7 +9,7 @@ https://github.com/AntonKueltz/fastecdsa/blob/master/fastecdsa/util.py
 """
 
 from hashlib import sha256
-from .ECsecp256k1 import order as ec_order
+from ECsecp256k1 import order as ec_order
 from struct import pack
 from binascii import hexlify
 from hmac import new as hmac_new
@@ -46,7 +46,7 @@ def check_hash_digest(m, hash_digest_size=default_hash_digest_size):
   assert type(m) == bytes and len(m) == hash_digest_size, "m must be bytes with correct bytes length"
 
 def rfc6979(prv, m, hasher=default_hasher):
-  assert type(prv) == int and 0 < prv and prv < ec_order, "invalid prv"
+  assert type(prv) == int and 0 < prv and prv < ec_order, "invalid prv: " + str(prv)
   check_hash_digest(m)
   return rfc6979_raw(prv, m, hasher)
 
@@ -71,3 +71,10 @@ def rfc6979_raw(prv, m, hasher=default_hasher):
       return nonce
     k = hmac_new(k, v + b'\x00', hasher).digest()
     v = hmac_new(k, v, hasher).digest()
+
+if __name__ == "__main__":
+  msg = sha256(b'Satoshi Nakamoto').digest()
+  x = 0x1
+  nonce = rfc6979(x, msg)
+  expected = 0x8F8A276C19F4149656B280621E358CCE24F5F52542772691EE69063B74F15D15
+  assert nonce == expected
