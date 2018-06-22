@@ -29,24 +29,28 @@ ADDRESS  = [MAINNET_ADDRESS,  TESTNET_ADDRESS]
 # [45:78] key (private/public)
 
 def bip32_master_prvkey_from_seed(bip32_seed, version):
-    """derive the master extended private key from the seed"""
+    """Derive the master extended private key from the seed"""
     if type(bip32_seed) == str:
         bip32_seed = bytes.fromhex(bip32_seed)
     assert version in PRIVATE, "wrong version, master key must be private"
+
+    "First derive the master private key"
+    hashValue = HMAC(b"Bitcoin seed", bip32_seed, sha512).digest()
+    mprv = int.from_bytes(hashValue[:32], 'big') % ec.order
+
+    "Then derive the extended master private key"
     xmprv = version                             # version
     xmprv += b'\x00'                            # depth
     xmprv += b'\x00\x00\x00\x00'                # parent pubkey fingerprint
     xmprv += b'\x00\x00\x00\x00'                # child index
-    hashValue = HMAC(b"Bitcoin seed", bip32_seed, sha512).digest()
     xmprv += hashValue[32:]                     # chain code
-    mprv = int.from_bytes(hashValue[:32], 'big') % ec.order
     xmprv += b'\x00' + mprv.to_bytes(32, 'big') # private key
     return b58encode_check(xmprv)
 
 
 def bip32_xpub_from_xprv(xprv):
     """Neutered Derivation (ND)
-    
+
     Computation of the extended public key corresponding to an extended
     private key (“neutered” as it removes the ability to sign transactions)
     """
@@ -74,7 +78,7 @@ def bip32_ckd(xparentkey, index):
 
     Key derivation is normal if the extended parent key is public or
     child_index is less than 0x80000000.
-    
+
     Key derivation is hardened if the extended parent key is private and
     child_index is not less than 0x80000000.
     """
@@ -143,7 +147,7 @@ def bip32_derive(xkey, path):
     elif isinstance(path, str):
         steps = path.split('/')
         if steps[0] not in {'m', '.'}:
-            raise ValueError('Invalid derivation path: {}'.format(path))  
+            raise ValueError('Invalid derivation path: {}'.format(path))
         if steps[0] == 'm':
             decoded = b58decode_check(xkey)
             t = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00'
