@@ -7,33 +7,10 @@ with open('README.md', 'r') as fh:
 setup(
     name = btclib.name,
     version = btclib.__version__,
-    url = 'http://github.com/btclib-org/btclib',
     license = btclib.__license__,
-    author = 'The btclib developers',
-    description = 'A "bitcoin cryptography" library.',
+    author = btclib.__author__,
     long_description = longdescription,
     long_description_content_type = 'text/markdown',
-    packages = find_packages(exclude=['tests']),
+    packages = find_packages(),
     include_package_data = True,
-    keywords = 'bitcoin cryptography elliptic-curves ecdsa schnorr RFC-6979 bip32 bip39 electrum base58 bech32 segwit message-signing',
-    python_requires = '>=3.8',
-    classifiers = [
-        'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.8',
-
-        'Development Status :: 4 - Beta',
-
-        'Intended Audience :: Developers',
-        'Intended Audience :: Education',
-
-        'License :: OSI Approved :: MIT License',
-
-        'Natural Language :: English',
-
-        'Operating System :: OS Independent',
-
-        'Topic :: Security :: Cryptography',
-        'Topic :: Scientific/Engineering',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-    ],
 )

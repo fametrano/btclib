@@ -1,2 +1,2 @@
-include LICENSE AUTHORS.md requirements.txt
+include *.md requirements.txt
 include btclib/dictdata/*.txt
