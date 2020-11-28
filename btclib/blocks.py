@@ -60,6 +60,44 @@ class BlockHeader(DataClassJsonMixin):
     nonce: int = 0
 
     @property
+    def bip9(self) -> bool:
+        """Return whether the BlockHeader is signaling readiness for BIP9.
+
+        BIP9 ("Version bits with timeout and delay")
+        is signalled if the version top 3 bits are 001.
+        https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki
+        """
+        # version is 4 bytes, 32 bits
+        # right shift 29 bits and check if the remaining bits are 001
+        return self.version >> 29 == 0b001
+
+    @property
+    def bip141(self) -> bool:
+        """Return whether the BlockHeader is signaling readiness for BIP141.
+
+        BIP141 ("Segregated Witness")
+        is signalled if the 2nd bit from the right is 1
+
+        https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki
+        """
+        # version is 4 bytes, 32 bits
+        # shift 1 bit to the right and see if the rightmost bit is 1
+        return self.bip9 and self.version >> 1 & 1 == 1
+
+    @property
+    def bip91(self) -> bool:
+        """Return whether the BlockHeader is signaling readiness for BIP91.
+
+        BIP91 ("Reduced threshold Segwit MASF")
+        is signalled if the version 5th bit from the right is 1
+
+        https://github.com/bitcoin/bips/blob/master/bip-0091.mediawiki
+        """
+        # version is 4 bytes, 32 bits
+        # shift 4 bits to the right and see if the rightmost bit is 1
+        return self.bip141 and self.version >> 4 & 1 == 1
+
+    @property
     def hash(self) -> bytes:
         "Return the reversed 32 bytes hash256 of the BlockHeader."
         s = self.serialize(assert_valid=False)

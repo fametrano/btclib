@@ -51,6 +51,9 @@ def test_block_1() -> None:
     hash_ = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
     assert header.hash.hex() == hash_
     assert header.difficulty == 1
+    assert not header.bip9
+    assert not header.bip141
+    assert not header.bip91
 
 
 def test_exceptions() -> None:
@@ -147,6 +150,9 @@ def test_block_170() -> None:
     hash_ = "00000000d1145790a8694403d4063f323d499e655c83426834d4ce2f8dd4a2ee"
     assert header.hash.hex() == hash_
     assert header.difficulty == 1
+    assert not header.bip9
+    assert not header.bip141
+    assert not header.bip91
 
 
 def test_block_200000() -> None:
@@ -176,6 +182,9 @@ def test_block_200000() -> None:
     hash_ = "000000000000034a7dedef4a161fa058a2d67a173a90155f3a2fe6fc132e0ebf"
     assert header.hash.hex() == hash_
     assert 0 <= header.difficulty - 2_864_140 < 1
+    assert not header.bip9
+    assert not header.bip141
+    assert not header.bip91
 
     block.transactions.pop()
     err_msg = "invalid merkle root: "
@@ -215,6 +224,9 @@ def test_block_481824() -> None:
         hash_ = "0000000000000000001c8018d9cb3b742ef25114f27563e3fc4a1902167f9893"
         assert header.hash.hex() == hash_
         assert 0 <= header.difficulty - 888_171_856_257 < 1
+        assert header.bip9
+        assert header.bip141
+        assert not header.bip91
 
         if i:  # segwit nodes see the witness data
             assert block.transactions[0].vin[0].txinwitness
